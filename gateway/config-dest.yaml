@@ -1,0 +1,82 @@
+variant: fcos
+version: 1.5.0
+
+passwd:
+  users:
+    - name: core
+      ssh_authorized_keys:
+        - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKF05sq4UVmmh8qfIQt4y6c8SjtJ7Q0sEvoAg7tlP+Mo
+
+systemd:
+  units:
+    - name: gateway.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Gateway
+        After=docker.service
+        Requires=docker.service
+
+        [Service]
+        TimeoutStartSec=0
+        Restart=always
+        Environment="BASE_PATH=/home/core"
+        ExecStart=/bin/bash /home/core/nginx/nginx-run.sh
+
+        [Install]
+        WantedBy=multi-user.target
+    - name: renew-cert.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Renew cert
+        After=docker.service
+        Requires=docker.service
+
+        [Service]
+        TimeoutStartSec=0
+        Environment="BASE_PATH=/home/core"
+        ExecStart=/bin/bash /home/core/certbot/renew-cert.sh
+        ExecStartPost=+/usr/bin/systemctl restart gateway.service
+
+        [Install]
+        WantedBy=multi-user.target
+    - name: renew-cert.timer
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Renew cert daily
+        After=docker.service
+        Requires=docker.service
+
+        [Timer]
+        OnCalendar=daily
+        AccuracySec=1h
+        Persistent=true
+
+        [Install]
+        WantedBy=timers.target
+
+storage:
+  files:
+    - path: /home/core/nginx/nginx-run.sh
+      contents:
+        local: nginx/nginx-run.sh
+    - path: /home/core/nginx/conf/default.conf
+      contents:
+        local: nginx/conf/default.conf
+    - path: /home/core/nginx/conf/nginx-proxy.conf
+      contents:
+        local: nginx/conf/nginx-proxy.conf
+    - path: /home/core/nginx/conf/nginx-ssl.conf
+      contents:
+        local: nginx/conf/nginx-ssl.conf
+    - path: /home/core/certbot/certbot.ini
+      contents:
+        local: certbot/certbot.ini
+    - path: /home/core/certbot/certbot-cloudflare.ini
+      contents:
+        local: certbot/certbot-cloudflare.ini
+    - path: /home/core/certbot/renew-cert.sh
+      contents:
+        local: certbot/renew-cert.sh
