@@ -1,0 +1,32 @@
+variant: fcos
+version: 1.5.0
+
+passwd:
+  users:
+    - name: core
+      ssh_authorized_keys:
+        - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKF05sq4UVmmh8qfIQt4y6c8SjtJ7Q0sEvoAg7tlP+Mo
+
+systemd:
+  units:
+    - name: adguard.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Adguard
+        After=docker.service
+        Requires=docker.service
+
+        [Service]
+        TimeoutStartSec=0
+        Restart=always
+        Environment="BASE_PATH=/home/core"
+        ExecStart=/bin/bash /home/core/adguard/run-adguard.sh
+
+        [Install]
+        WantedBy=multi-user.target
+storage:
+  files:
+    - path: /home/core/adguard/run-adguard.sh
+      contents:
+        local: run-adguard.sh
