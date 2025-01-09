@@ -1,7 +1,8 @@
 .DS_Store
 *.iso
-dist
+
 
 gateway/certbot/certbot-cloudflare.ini
 gateway/certbot/data
+gateway/dist
 

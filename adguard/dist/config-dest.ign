@@ -1,0 +1,35 @@
+{
+  "ignition": {
+    "version": "3.4.0"
+  },
+  "passwd": {
+    "users": [
+      {
+        "name": "core",
+        "sshAuthorizedKeys": [
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKF05sq4UVmmh8qfIQt4y6c8SjtJ7Q0sEvoAg7tlP+Mo"
+        ]
+      }
+    ]
+  },
+  "storage": {
+    "files": [
+      {
+        "path": "/home/core/adguard/run-adguard.sh",
+        "contents": {
+          "compression": "gzip",
+          "source": "data:;base64,H4sIAAAAAAAC/4RRT0vDMBy951P8iD3oIaSQlIXADhMEj4IehdE1cStbmpC2Gyh+d2lcklKRXVree7/3p/SO7tqO7ur+gNDj5vVp+7J5e17j4isBSYp7d1EP3xihXvtz2+htVxu9xrXaj7VXGLWm3mdMr++DNRojpGxz1B76wTrAxTwBR82b/xQ3nk6Ai1AQ+gcgOmX6sQNCvAFCJtcyBN4RAAA5Ay7S58R19GL9UVLrhvneX/bzhrWx3cdfa2Cz1UHFZMXo0LgMRuWyLkopyqhzziTnbAknA3HAyrKU0yPoOaFiUlw7ErkSXK4Ej9Z4E2HAYrmlmgqr2YBM5Lv0I34CAAD//1bHybQ2AgAA"
+        }
+      }
+    ]
+  },
+  "systemd": {
+    "units": [
+      {
+        "contents": "[Unit]\nDescription=Adguard\nAfter=docker.service\nRequires=docker.service\n\n[Service]\nTimeoutStartSec=0\nRestart=always\nEnvironment=\"BASE_PATH=/home/core\"\nExecStart=/bin/bash /home/core/adguard/run-adguard.sh\n\n[Install]\nWantedBy=multi-user.target\n",
+        "enabled": true,
+        "name": "adguard.service"
+      }
+    ]
+  }
+}
