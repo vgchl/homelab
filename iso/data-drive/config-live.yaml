@@ -1,0 +1,29 @@
+variant: fcos
+version: 1.5.0
+
+passwd:
+  users:
+    - name: core
+      ssh_authorized_keys:
+        - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKF05sq4UVmmh8qfIQt4y6c8SjtJ7Q0sEvoAg7tlP+Mo
+ 
+storage:
+  luks:
+    - name: data
+      label: luks-data
+      device: /dev/sdb
+      clevis:
+        tang:
+          - url: http://tang-1.vgchl.internal:9999
+            thumbprint: 37dTqKL28NLyitb6KdohiA4PFcNcKIsQ7r-5gNuNapg
+          - url: http://tang-2.vgchl.internal:9999
+            thumbprint: k2qeJ4Jnxd-1uXQcrUb7IL4Z0P9j1UDsU0wFE3vWRww
+          - url: http://tang-backup.vgchl.internal:9999
+            thumbprint: hpQj54d1rmHroGCfZoM4_ZAlO3W1ZzGjKratbBxDKBw
+        threshold: 2
+  filesystems:
+    - path: /var/mnt/data
+      device: /dev/mapper/data
+      format: ext4
+      label: data
+      with_mount_unit: true

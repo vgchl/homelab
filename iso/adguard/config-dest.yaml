@@ -1,0 +1,90 @@
+variant: fcos
+version: 1.5.0
+
+passwd:
+  users:
+    - name: core
+      ssh_authorized_keys:
+        - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKF05sq4UVmmh8qfIQt4y6c8SjtJ7Q0sEvoAg7tlP+Mo
+
+storage:
+  directories:
+    - path: /home/core/adguard
+      user:
+        name: core
+      group:
+        name: core
+    - path: /home/core/adguard/conf
+      user:
+        name: core
+      group:
+        name: core
+    - path: /home/core/adguard/work
+      user:
+        name: core
+      group:
+        name: core
+    - path: /home/core/.config
+      user:
+        name: core
+      group:
+        name: core
+    - path: /home/core/.config/containers
+      user:
+        name: core
+      group:
+        name: core
+    - path: /home/core/.config/containers/systemd
+      user:
+        name: core
+      group:
+        name: core
+    - path: /home/core/.config/containers/systemd/user
+      user:
+        name: core
+      group:
+        name: core
+  files:
+    - path: /var/lib/systemd/linger/core
+      mode: 0644
+    - path: /home/core/.config/containers/systemd/user/adguard.container
+      contents:
+        inline: |
+          [Container]
+          Image=docker.io/adguard/adguardhome:latest
+          Volume=/home/core/adguard/work:/opt/adguardhome/work:rw,Z
+          Volume=/home/core/adguard/conf:/opt/adguardhome/conf:rw,Z
+          PublishPort=53:53/tcp
+          PublishPort=53:53/udp
+          PublishPort=80:80/tcp
+
+          [Service]
+          Restart=always
+
+          [Install]
+          WantedBy=default.target
+      user:
+        name: core
+      group:
+        name: core
+    - path: /home/core/adguard/conf/AdGuardHome.yaml
+      contents:
+        local: adguard.yaml
+      user:
+        name: core
+      group:
+        name: core
+    - path: /etc/systemd/resolved.conf.d/adguardhome.conf
+      contents:
+        inline: |
+          [Resolve]
+          DNS=127.0.0.1
+          DNSStubListener=no
+    - path: /etc/sysctl.d/1-sysctl.conf
+      contents: 
+        inline: |
+          net.ipv4.ip_unprivileged_port_start=1
+  links:
+    # Workaround for slow service start ups due to podman waiting for network-online which isn't reached normally.
+    - path: /etc/systemd/system/multi-user.target.wants/docker.service
+      target: /usr/lib/systemd/system/docker.service

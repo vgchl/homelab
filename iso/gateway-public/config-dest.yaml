@@ -1,0 +1,56 @@
+variant: fcos
+version: 1.5.0
+
+passwd:
+  users:
+    - name: core
+      ssh_authorized_keys:
+        - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKF05sq4UVmmh8qfIQt4y6c8SjtJ7Q0sEvoAg7tlP+Mo
+
+storage:
+  files:
+    - path: /etc/containers/systemd/gateway.build
+      contents:
+        inline: |
+          [Build]
+          ImageTag=localhost/gateway
+          SetWorkingDirectory=/home/core/gateway/src
+    - path: /etc/containers/systemd/gateway.container
+      contents:
+        inline: |
+          [Unit]
+          Description=Gateway
+          Wants=network-online.target
+          After=network-online.target
+
+          [Container]
+          Image=gateway.build
+          Volume=/home/core/gateway/data:/data:z
+          Volume=/home/core/gateway/conf:/etc/caddy:z
+          PublishPort=80:80
+          PublishPort=443:443
+
+          [Service]
+          Restart=always
+
+          [Install]
+          WantedBy=multi-user.target
+    - path: /home/core/gateway/conf/Caddyfile
+      contents: 
+        local: Caddyfile
+  directories:
+    - path: /home/core/gateway/data
+  trees:
+    - path: /home/core/gateway/src
+      local: src  
+      
+boot_device:
+  luks:
+    tang:
+      - url: http://tang-1.vgchl.internal:9999
+        thumbprint: 37dTqKL28NLyitb6KdohiA4PFcNcKIsQ7r-5gNuNapg
+      - url: http://tang-2.vgchl.internal:9999
+        thumbprint: k2qeJ4Jnxd-1uXQcrUb7IL4Z0P9j1UDsU0wFE3vWRww
+      - url: http://tang-backup.vgchl.internal:9999
+        thumbprint: hpQj54d1rmHroGCfZoM4_ZAlO3W1ZzGjKratbBxDKBw
+    threshold: 2
