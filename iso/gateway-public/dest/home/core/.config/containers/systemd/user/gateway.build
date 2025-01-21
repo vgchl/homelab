@@ -1,0 +1,3 @@
+[Build]
+ImageTag=localhost/gateway
+SetWorkingDirectory=/home/core/gateway/src

@@ -9,7 +9,7 @@ RUN apk add --no-cache \
             curl
 
 RUN apk add --no-cache --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing \
-            'clevis==19-r0'
+            clevis
 
 COPY --from=builder /usr/bin/caddy /usr/bin/caddy
 

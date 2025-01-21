@@ -1,0 +1,17 @@
+[Unit]
+Description=Gateway
+Wants=network-online.target
+After=network-online.target
+
+[Container]
+Image=gateway.build
+Volume=/home/core/gateway/data:/data:rw,Z
+Volume=/home/core/gateway/conf:/etc/caddy:ro,Z
+PublishPort=80:80/tcp
+PublishPort=443:443/tcp
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target

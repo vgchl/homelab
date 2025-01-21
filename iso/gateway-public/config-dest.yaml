@@ -6,44 +6,116 @@ passwd:
     - name: core
       ssh_authorized_keys:
         - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKF05sq4UVmmh8qfIQt4y6c8SjtJ7Q0sEvoAg7tlP+Mo
+        
+systemd:
+  units:
+    - name: "install-qemu-guest-agent.service"
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Ensure qemu-guest-agent is installed
+        Wants=network-online.target
+        After=network-online.target
+        Before=zincati.service
+        ConditionPathExists=!/var/lib/%N.stamp
+
+        [Service]
+        Type=oneshot
+        RemainAfterExit=yes
+        ExecStart=rpm-ostree install --allow-inactive --assumeyes --reboot qemu-guest-agent
+        ExecStart=/bin/touch /var/lib/%N.stamp
+
+        [Install]
+        WantedBy=multi-user.target
 
 storage:
   files:
-    - path: /etc/containers/systemd/gateway.build
+    - path: /home/core/.config/containers/systemd/user/gateway.build
       contents:
-        inline: |
-          [Build]
-          ImageTag=localhost/gateway
-          SetWorkingDirectory=/home/core/gateway/src
-    - path: /etc/containers/systemd/gateway.container
+        local: dest/home/core/.config/containers/systemd/user/gateway.build
+    - path: /home/core/.config/containers/systemd/user/gateway.container
       contents:
-        inline: |
-          [Unit]
-          Description=Gateway
-          Wants=network-online.target
-          After=network-online.target
-
-          [Container]
-          Image=gateway.build
-          Volume=/home/core/gateway/data:/data:z
-          Volume=/home/core/gateway/conf:/etc/caddy:z
-          PublishPort=80:80
-          PublishPort=443:443
-
-          [Service]
-          Restart=always
-
-          [Install]
-          WantedBy=multi-user.target
+        local: dest/home/core/.config/containers/systemd/user/gateway.container
+      user:
+        name: core
+      group:
+        name: core
     - path: /home/core/gateway/conf/Caddyfile
       contents: 
-        local: Caddyfile
+        local: dest/home/core/gateway/conf/Caddyfile
+      user:
+        name: core
+      group:
+        name: core
+    - path: /home/core/gateway/src/cloudflare-api-key.jwe
+      contents: 
+        local: dest/home/core/gateway/src/cloudflare-api-key.jwe
+      user:
+        name: core
+      group:
+        name: core
+    - path: /home/core/gateway/src/Dockerfile
+      contents: 
+        local: dest/home/core/gateway/src/Dockerfile
+      user:
+        name: core
+      group:
+        name: core
+    - path: /home/core/gateway/src/entrypoint.sh
+      contents: 
+        local: dest/home/core/gateway/src/entrypoint.sh
+      user:
+        name: core
+      group:
+        name: core
+    - path: /var/lib/systemd/linger/core
+    - path: /etc/sysctl.d/1-sysctl.conf
+      contents: 
+        inline: |
+          net.ipv4.ip_unprivileged_port_start=1
+
   directories:
+    - path: /home/core/gateway
+      user:
+        name: core
+      group:
+        name: core
     - path: /home/core/gateway/data
-  trees:
-    - path: /home/core/gateway/src
-      local: src  
-      
+      user:
+        name: core
+      group:
+        name: core
+    - path: /home/core/gateway/conf
+      user:
+        name: core
+      group:
+        name: core
+    - path: /home/core/.config
+      user:
+        name: core
+      group:
+        name: core
+    - path: /home/core/.config/containers
+      user:
+        name: core
+      group:
+        name: core
+    - path: /home/core/.config/containers/systemd
+      user:
+        name: core
+      group:
+        name: core
+    - path: /home/core/.config/containers/systemd/user
+      user:
+        name: core
+      group:
+        name: core
+
+  links:
+    # Workaround for slow service start ups due to podman waiting for network-online which isn't reached normally.
+    - path: /etc/systemd/system/multi-user.target.wants/docker.service
+      target: /usr/lib/systemd/system/docker.service
+
 boot_device:
   luks:
     tang:
