@@ -6,40 +6,65 @@ passwd:
     - name: core
       ssh_authorized_keys:
         - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKF05sq4UVmmh8qfIQt4y6c8SjtJ7Q0sEvoAg7tlP+Mo
+    - name: worker
 
-systemd:
-  units:
-    - name: minecraft.service
-      enabled: true
-      contents: |
-        [Unit]
-        Description=Minecraft
-        After=docker.service
-        Requires=docker.service
-
-        [Service]
-        TimeoutStartSec=0
-        Restart=always
-        Environment="BASE_PATH=/home/core/minecraft"
-        ExecStart=/bin/bash /home/core/minecraft/run.sh
-
-        [Install]
-        WantedBy=multi-user.target
 storage:
+  directories:
+    - path: /home/worker/minecraft
+      user: 
+        name: worker
+      group:
+        name: worker
+    - path: /home/worker/.config
+      user: 
+        name: worker
+      group:
+        name: worker
+    - path: /home/worker/.config/containers
+      user: 
+        name: worker
+      group:
+        name: worker
+    - path: /home/worker/.config/containers/systemd
+      user: 
+        name: worker
+      group:
+        name: worker
+    - path: /home/worker/.config/containers/systemd/user
+      user: 
+        name: worker
+      group:
+        name: worker
+  files:
+    - path: /home/worker/.config/containers/systemd/user/minecraft.container
+      contents:
+        local: minecraft.container  
+      user:
+        name: worker
+      group:
+        name: worker
+    - path: /home/worker/minecraft/minecraft.env
+      contents:
+        local: minecraft.env
+      user:
+        name: worker
+      group:
+        name: worker
+    - path: /var/lib/systemd/linger/worker
+
+  links:
+    # Workaround for slow service start ups due to podman waiting for network-online which isn't reached normally.
+    - path: /etc/systemd/system/multi-user.target.wants/docker.service
+      target: /usr/lib/systemd/system/docker.service
+
   disks:
     - device: /dev/sdb
       partitions:
         - number: 1
           label: data
+
   filesystems:
     - device: /dev/disk/by-partlabel/data
-      path: /var/data
+      path: /var/mnt/minecraft
       format: ext4
       with_mount_unit: true
-  files:
-    - path: /home/core/minecraft/run.sh
-      contents:
-        local: run.sh
-    - path: /home/core/minecraft/minecraft.env
-      contents:
-        local: minecraft.env
