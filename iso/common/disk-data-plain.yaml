@@ -1,0 +1,14 @@
+variant: fcos
+version: 1.6.0
+
+storage:
+  disks:
+    - device: /dev/sdb
+      partitions:
+        - number: 1
+          label: data
+  filesystems:
+    - device: /dev/disk/by-partlabel/data
+      path: /var/mnt/data
+      format: ext4
+      with_mount_unit: true
