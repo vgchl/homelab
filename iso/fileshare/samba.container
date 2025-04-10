@@ -1,0 +1,14 @@
+[Container]
+Image=ghcr.io/dockur/samba:latest
+Volume=/var/mnt/data/shared:/storage:rw,z
+Environment=NAME=shared
+Environment=USER=shared
+Environment=PASS=shared
+PublishPort=445:445
+UIDMap=+1000:@%U
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target
