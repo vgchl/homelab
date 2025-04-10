@@ -1,0 +1,47 @@
+variant: fcos
+version: 1.6.0
+
+passwd:
+  users:
+    - name: worker
+
+storage:
+  directories:
+    - path: /home/worker/.config
+      user: 
+        name: worker
+      group:
+        name: worker
+    - path: /home/worker/.config/containers
+      user: 
+        name: worker
+      group:
+        name: worker
+    - path: /home/worker/.config/containers/systemd
+      user: 
+        name: worker
+      group:
+        name: worker
+    - path: /home/worker/.config/containers/systemd/user
+      user: 
+        name: worker
+      group:
+        name: worker
+    - path: /home/worker/.config/systemd
+      user:
+        name: worker
+      group:
+        name: worker
+    - path: /home/worker/.config/systemd/user
+      user: 
+        name: worker
+      group:
+        name: worker
+
+  files:
+    - path: /var/lib/systemd/linger/worker
+
+  links:
+    # Workaround for slow service start ups due to podman waiting for network-online which isn't reached normally.
+    - path: /etc/systemd/system/multi-user.target.wants/docker.service
+      target: /usr/lib/systemd/system/docker.service
