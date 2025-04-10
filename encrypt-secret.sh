@@ -1,3 +1,0 @@
-#!/bin/sh
-
-clevis encrypt sss '{"t":1,"pins":{"tang":{"url":"http://tang-backup.vgchl.internal:9999"},"sss":{"t":2,"pins":{"tang":[{"url":"http://tang-1.vgchl.internal:9999"},{"url":"http://tang-2.vgchl.internal:9999"}]}}}}'
