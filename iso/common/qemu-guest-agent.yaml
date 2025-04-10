@@ -1,0 +1,24 @@
+variant: fcos
+version: 1.6.0
+
+systemd:
+  units:
+    - name: "install-qemu-guest-agent.service"
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Ensure qemu-guest-agent is installed
+        Wants=network-online.target
+        After=network-online.target
+        Before=zincati.service
+        ConditionPathExists=!/var/lib/%N.stamp
+
+        [Service]
+        Type=oneshot
+        RemainAfterExit=yes
+        ExecStart=/usr/bin/rpm-ostree install -y --allow-inactive qemu-guest-agent
+        ExecStart=/bin/touch /var/lib/%N.stamp
+        ExecStart=/bin/systemctl --no-block reboot
+
+        [Install]
+        WantedBy=multi-user.target
