@@ -1,0 +1,12 @@
+[Container]
+Image=docker.io/uldiseihenbergs/meshcentral:latest
+Volume=/var/mnt/data/meshcentral/files:/home/node/meshcentral/meshcentral-files:rw,z
+Volume=/var/mnt/data/meshcentral/data:/home/node/meshcentral/meshcentral-data:rw,z
+PublishPort=443:443/tcp
+UIDMap=+1000:@%U
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,38 @@
+variant: fcos
+version: 1.6.0
+
+ignition:
+  config:
+    merge:
+      - local: 'dist/common/user-core.ign'
+      - local: 'dist/common/user-worker.ign'
+      - local: 'dist/common/unprivileged-ports.ign'
+      - local: 'dist/common/qemu-guest-agent.ign'
+      - local: 'dist/common/disk-data-plain.ign'
+      - local: 'dist/common/disable-ipv6.ign'
+
+storage:
+  directories:
+    - path: /var/mnt/data/meshcentral
+      user: 
+        name: worker
+      group:
+        name: worker
+    - path: /var/mnt/data/meshcentral/data
+      user: 
+        name: worker
+      group:
+        name: worker
+    - path: /var/mnt/data/meshcentral/files
+      user: 
+        name: worker
+      group:
+        name: worker
+  files:
+    - path: /home/worker/.config/containers/systemd/user/meshcentral.container
+      contents:
+        local: meshcentral.container
+      user:
+        name: worker
+      group:
+        name: worker
