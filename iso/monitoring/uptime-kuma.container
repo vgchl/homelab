@@ -1,0 +1,10 @@
+[Container]
+Image=docker.io/louislam/uptime-kuma:1
+Volume=/var/mnt/data/uptime-kuma:/app/data:rw,z
+PublishPort=80:3001/tcp
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target

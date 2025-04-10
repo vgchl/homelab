@@ -1,0 +1,61 @@
+logging {
+  level  = "info"
+  format = "logfmt"
+}
+
+local.file "grafana_cloud_loki_username" {
+  filename = file.path_join(sys.env("CREDENTIALS_DIRECTORY"), "loki_username")
+}
+
+local.file "grafana_cloud_prometheus_username" {
+  filename = file.path_join(sys.env("CREDENTIALS_DIRECTORY"), "prometheus_username")
+}
+
+local.file "grafana_cloud_api_key" {
+  filename = file.path_join(sys.env("CREDENTIALS_DIRECTORY"), "grafana_cloud_api_key")
+}
+
+loki.source.journal "journal"  {
+  forward_to    = [loki.write.grafana_cloud.receiver]
+  labels        = {component = "loki.source.journal"}
+  relabel_rules = loki.relabel.journal.rules
+  path          = "/var/log/journal"
+  matches       = "_SYSTEMD_UNIT=uptime-kuma.service _SYSTEMD_UNIT=alloy.service"
+}
+
+loki.relabel "journal" {
+  forward_to = []
+
+  rule {
+    source_labels = ["__journal__systemd_unit"]
+    target_label  = "unit"
+  }
+}
+
+loki.write "grafana_cloud" {
+    endpoint {
+        url = "https://logs-prod-020.grafana.net/loki/api/v1/push"
+        basic_auth {
+            username = local.file.grafana_cloud_loki_username.content
+            password = local.file.grafana_cloud_api_key.content
+        }
+    }
+}
+
+prometheus.exporter.unix "host" {}
+
+prometheus.scrape "host" {
+  targets    = prometheus.exporter.unix.host.targets
+  forward_to = [prometheus.write.queue.grafana_cloud.receiver]
+}
+
+prometheus.write.queue "grafana_cloud" {
+  endpoint "grafana_prom" {
+    url = "https://prometheus-prod-37-prod-ap-southeast-1.grafana.net/api/prom/push"
+
+    basic_auth {
+        username = local.file.grafana_cloud_prometheus_username.content
+        password = local.file.grafana_cloud_api_key.content
+    }
+  }
+}
