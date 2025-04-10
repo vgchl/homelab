@@ -1,0 +1,46 @@
+variant: fcos
+version: 1.6.0
+
+storage:
+  directories:
+    - path: /home/worker/alloy
+      user: 
+        name: worker
+      group:
+        name: worker
+  files:
+    - path: /home/worker/alloy/base.alloy
+      contents: 
+        local: grafana-alloy/base.alloy
+      user: 
+        name: worker
+      group:
+        name: worker
+    - path: /home/worker/.config/containers/systemd/alloy.container
+      contents:
+        local: grafana-alloy/alloy.container
+      user: 
+        name: worker
+      group:
+        name: worker
+    - path: /home/worker/secrets/loki-username.jwe
+      contents:
+        local: grafana-alloy/loki-username.jwe
+      user: 
+        name: worker
+      group:
+        name: worker
+    - path: /home/worker/secrets/prometheus-username.jwe
+      contents:
+        local: grafana-alloy/prometheus-username.jwe
+      user: 
+        name: worker
+      group:
+        name: worker
+    - path: /home/worker/secrets/grafana-cloud-api-key.jwe
+      contents:
+        local: grafana-alloy/grafana-cloud-api-key.jwe
+      user: 
+        name: worker
+      group:
+        name: worker

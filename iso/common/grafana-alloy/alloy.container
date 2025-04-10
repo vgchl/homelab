@@ -1,0 +1,23 @@
+[Unit]
+Description=Alloy
+Wants=network-online.target
+After=network-online.target
+After=secrets-loader.service
+
+[Container]
+Image=docker.io/grafana/alloy:latest
+SecurityLabelDisable=true
+Volume=/home/worker/alloy:/etc/alloy:ro
+Volume=/var/log/journal:/var/log/journal:ro
+Volume=/:/hostfs:ro
+Secret=grafana-cloud-api-key
+Secret=loki-username
+Secret=prometheus-username
+PublishPort=12345:12345
+Exec=run --server.http.listen-addr=0.0.0.0:12345 --storage.path=/var/lib/alloy/data --stability.level=experimental --disable-reporting /etc/alloy/config.alloy
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target
