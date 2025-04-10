@@ -14,6 +14,6 @@ Not all services have CasC. Those that do mostly share the same standard setup: 
 Some specs:
 - 5x Lenovo P330 Tiny (i7 8700T / 64GB RAM)
 - 3 nodes have quad 2.5gbe PCIe cards
-- 1 node (iSCSI host) has an 10gbe SFP card
-- 1 node (AI workloads) has a NVIDIA RTX3050
+- 1 node (iSCSI host) has an 10gbe SFP PCIe card
+- 1 node (AI workloads) has a NVIDIA RTX3050 GPU
 - Ubiquiti Unifi Pro Max 16 switch
