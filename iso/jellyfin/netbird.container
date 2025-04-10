@@ -1,0 +1,14 @@
+[Container]
+Image=docker.io/netbirdio/netbird:latest
+Volume=/var/mnt/data/netbird:/etc/netbird:rw,z
+AutoUpdate=registry
+Environment=NB_USE_NETSTACK_MODE=true
+HostName=jellyfin-netbird
+Network=jellyfin.network
+NetworkAlias=jellyfin
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target

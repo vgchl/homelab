@@ -1,0 +1,15 @@
+[Container]
+Image=lscr.io/linuxserver/prowlarr:latest
+Volume=/var/mnt/data/prowlarr/config:/config:rw,z
+PublishPort=9696:9696/tcp
+Network=jellyfin.network
+NetworkAlias=prowlarr
+Environment=PUID=%U
+Environment=GUID=%G
+AutoUpdate=registry
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target

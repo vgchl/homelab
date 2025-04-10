@@ -1,0 +1,17 @@
+[Container]
+Image=docker.io/jellyfin/jellyfin:latest
+Volume=/var/mnt/data/jellyfin/config:/config:rw,z
+Volume=/var/mnt/data/jellyfin/cache:/cache:rw,z
+Volume=/var/mnt/data/jellyfin/media:/media:rw,z
+PublishPort=8096:8096/tcp
+UserNS=keep-id
+Network=jellyfin.network
+NetworkAlias=jellyfin
+AutoUpdate=registry
+
+[Service]
+SuccessExitStatus=0 143
+Restart=always
+
+[Install]
+WantedBy=default.target
