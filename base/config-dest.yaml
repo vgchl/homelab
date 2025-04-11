@@ -1,0 +1,11 @@
+variant: fcos
+version: 1.6.0
+
+ignition:
+  config:
+    merge:
+      - local: 'dist/common/user-core.ign'
+      - local: 'dist/common/user-worker.ign'
+      - local: 'dist/common/disable-ipv6.ign'
+      - local: 'dist/common/unprivileged-ports.ign'
+      - local: 'dist/common/qemu-guest-agent.ign'
