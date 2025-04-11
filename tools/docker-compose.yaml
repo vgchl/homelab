@@ -1,0 +1,7 @@
+services:
+  clevis:
+    build: 
+      dockerfile: dockerfile-clevis
+      context: .
+    entrypoint: clevis
+    tty: false

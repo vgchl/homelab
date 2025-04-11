@@ -1,0 +1,14 @@
+[Container]
+Image=docker.io/adguard/adguardhome:latest
+Volume=work:/opt/adguardhome/work:rw,z
+Volume=/home/worker/adguard:/opt/adguardhome/conf:rw,z
+PublishPort=53:53/tcp
+PublishPort=53:53/udp
+PublishPort=80:80/tcp
+
+[Service]
+Restart=always
+ExecStartPre=/bin/sh -c 'clevis decrypt < /home/worker/adguard/AdGuardHome.yaml.jwe > /home/worker/adguard/AdGuardHome.yaml'
+
+[Install]
+WantedBy=default.target
