@@ -1,0 +1,13 @@
+[Container]
+Image=docker.io/padhihomelab/tang:latest
+Secret=k2qeJ4Jnxd-1uXQcrUb7IL4Z0P9j1UDsU0wFE3vWRww.jwk,target=/db/k2qeJ4Jnxd-1uXQcrUb7IL4Z0P9j1UDsU0wFE3vWRww.jwk
+Secret=NH3kJu1a6rxRMoqBJzuE-z17fDJbGDkYko-C9mACv3A.jwk,target=/db/NH3kJu1a6rxRMoqBJzuE-z17fDJbGDkYko-C9mACv3A.jwk
+PublishPort=9999:8080/tcp
+PublishPort=80:8080/tcp
+AutoUpdate=registry
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target
