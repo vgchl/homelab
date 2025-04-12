@@ -9,7 +9,7 @@ ignition:
       - local: 'dist/common/disable-ipv6.ign'
       - local: 'dist/common/unprivileged-ports.ign'
       - local: 'dist/common/qemu-guest-agent.ign'
-      - local: 'dist/common/disk-data-plain.ign'
+      - local: 'dist/common/data-disk-plain.ign'
 
 storage:
   directories:
