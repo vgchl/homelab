@@ -1,90 +1,36 @@
 variant: fcos
-version: 1.5.0
+version: 1.6.0
 
-passwd:
-  users:
-    - name: core
-      ssh_authorized_keys:
-        - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKF05sq4UVmmh8qfIQt4y6c8SjtJ7Q0sEvoAg7tlP+Mo
-
-systemd:
-  units:
-    - name: var-mnt-data.mount
-      enabled: true
-      contents: |
-        [Unit]
-        Requires=systemd-fsck@dev-mapper-data.service
-        After=systemd-fsck@dev-mapper-data.service
-        
-        [Mount]
-        Where=/var/mnt/data
-        What=/dev/mapper/data
-        Type=ext4
-        Options=_netdev
-        
-        [Install]
-        RequiredBy=remote-fs.target
+ignition:
+  config:
+    merge:
+      - local: 'dist/common/user-core.ign'
+      - local: 'dist/common/user-worker.ign'
+      - local: 'dist/common/unprivileged-ports.ign'
+      - local: 'dist/common/qemu-guest-agent.ign'
+      - local: 'dist/common/main-disk-encrypted.ign'
+      - local: 'dist/common/data-disk-encrypted.ign'
+      - local: 'dist/common/disable-ipv6.ign'
 
 storage:
+  directories:
+    - path: /home/worker/conduwuit
+      user: 
+        name: worker
+      group:
+        name: worker
   files:
-    - path: /etc/crypttab
+    - path: /home/worker/.config/containers/systemd/user/conduwuit.container
       contents:
-        inline: |
-          data /dev/sdb none luks,_netdev
-    - path: /etc/containers/systemd/conduwuit.container
-      contents:
-        inline: |
-          [Unit]
-          Description=Conduwuit
-          Wants=network-online.target
-          After=network-online.target
-
-          [Container]
-          Image=docker.io/girlbossceo/conduwuit:latest
-          Volume=/var/mnt/data:/var/lib/conduwuit:z
-          PublishPort=80:8448
-          Pull=newer
-          EnvironmentFile=/home/core/conduwuit/conduwuit.env
-
-          [Service]
-          Restart=always
-
-          [Install]
-          WantedBy=multi-user.target
-    - path: /etc/containers/systemd/alloy.container
-      contents:
-        inline: |
-          [Unit]
-          Description=Alloy
-          Wants=network-online.target
-          After=network-online.target
-
-          [Container]
-          Image=docker.io/library/grafana/alloy:latest
-          Volume=/home/core/alloy/config.alloy:/etc/alloy/config.alloy:z
-          Volume=/var/log/journal:/var/log/journal:z
-          PublishPort=12345:12345
-          Exec=run --server.http.listen-addr=0.0.0.0:12345 --storage.path=/var/lib/alloy/data /etc/alloy/config.alloy
-
-          [Service]
-          Restart=always
-
-          [Install]
-          WantedBy=multi-user.target
-    - path: /home/core/conduwuit/conduwuit.env
+        local: conduwuit.container
+      user:
+        name: worker
+      group:
+        name: worker
+    - path: /home/worker/conduwuit/conduwuit.env
       contents: 
         local: conduwuit.env
-    - path: /home/core/alloy/config.alloy
-      contents: 
-        local: config.alloy
-    
-boot_device:
-  luks:
-    tang:
-      - url: http://tang-1.vgchl.internal:9999
-        thumbprint: 37dTqKL28NLyitb6KdohiA4PFcNcKIsQ7r-5gNuNapg
-      - url: http://tang-2.vgchl.internal:9999
-        thumbprint: k2qeJ4Jnxd-1uXQcrUb7IL4Z0P9j1UDsU0wFE3vWRww
-      - url: http://tang-backup.vgchl.internal:9999
-        thumbprint: hpQj54d1rmHroGCfZoM4_ZAlO3W1ZzGjKratbBxDKBw
-    threshold: 2
+      user:
+        name: worker
+      group:
+        name: worker

@@ -1,0 +1,12 @@
+[Container]
+Image=docker.io/girlbossceo/conduwuit:latest
+Volume=/var/mnt/data:/var/lib/conduwuit:rw,z
+PublishPort=80:8448/tcp
+AutoUpdate=registry
+EnvironmentFile=/home/worker/conduwuit/conduwuit.env
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target
