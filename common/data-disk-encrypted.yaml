@@ -1,0 +1,31 @@
+# Mounts a previously LUKS encrypted data disk at /var/mnt/data.
+# CoreOS does not support re-use of existing tang encrypted disks when using the file system configuration.
+# Defining a tang encrypted filesystem would cause the disk to be wiped on every reinstall. Therefore we manually mount the disk.
+
+variant: fcos
+version: 1.6.0
+
+systemd:
+  units:
+    - name: var-mnt-data.mount
+      enabled: true
+      contents: |
+        [Unit]
+        Requires=systemd-fsck@dev-mapper-data.service
+        After=systemd-fsck@dev-mapper-data.service
+        
+        [Mount]
+        Where=/var/mnt/data
+        What=/dev/mapper/data
+        Type=ext4
+        Options=_netdev
+        
+        [Install]
+        RequiredBy=remote-fs.target
+
+storage:
+  files:
+    - path: /etc/crypttab
+      contents:
+        inline: |
+          data /dev/sdb none luks,_netdev
