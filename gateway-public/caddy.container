@@ -1,0 +1,14 @@
+[Container]
+Image=caddy.build
+Volume=/home/worker/caddy/data:/data:rw,Z
+Volume=/home/worker/caddy/conf:/etc/caddy:ro,Z
+PublishPort=80:80/tcp
+PublishPort=443:443/tcp
+Secret=cloudflare-api-key,type=env,target=CF_API_KEY
+AutoUpdate=registry
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target
