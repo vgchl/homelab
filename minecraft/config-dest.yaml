@@ -1,36 +1,19 @@
 variant: fcos
-version: 1.5.0
+version: 1.6.0
 
-passwd:
-  users:
-    - name: core
-      ssh_authorized_keys:
-        - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKF05sq4UVmmh8qfIQt4y6c8SjtJ7Q0sEvoAg7tlP+Mo
-    - name: worker
+ignition:
+  config:
+    merge:
+      - local: 'dist/common/user-core.ign'
+      - local: 'dist/common/user-worker.ign'
+      - local: 'dist/common/unprivileged-ports.ign'
+      - local: 'dist/common/qemu-guest-agent.ign'
+      - local: 'dist/common/data-disk-plain.ign'
+      - local: 'dist/common/disable-ipv6.ign'
 
 storage:
   directories:
-    - path: /home/worker/minecraft
-      user: 
-        name: worker
-      group:
-        name: worker
-    - path: /home/worker/.config
-      user: 
-        name: worker
-      group:
-        name: worker
-    - path: /home/worker/.config/containers
-      user: 
-        name: worker
-      group:
-        name: worker
-    - path: /home/worker/.config/containers/systemd
-      user: 
-        name: worker
-      group:
-        name: worker
-    - path: /home/worker/.config/containers/systemd/user
+    - path: /var/mnt/data/minecraft
       user: 
         name: worker
       group:
@@ -43,28 +26,10 @@ storage:
         name: worker
       group:
         name: worker
-    - path: /home/worker/minecraft/minecraft.env
+    - path: /home/worker/minecraft.env
       contents:
         local: minecraft.env
       user:
         name: worker
       group:
         name: worker
-    - path: /var/lib/systemd/linger/worker
-
-  links:
-    # Workaround for slow service start ups due to podman waiting for network-online which isn't reached normally.
-    - path: /etc/systemd/system/multi-user.target.wants/docker.service
-      target: /usr/lib/systemd/system/docker.service
-
-  disks:
-    - device: /dev/sdb
-      partitions:
-        - number: 1
-          label: data
-
-  filesystems:
-    - device: /dev/disk/by-partlabel/data
-      path: /var/mnt/minecraft
-      format: ext4
-      with_mount_unit: true
