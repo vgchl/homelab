@@ -1,0 +1,9 @@
+jellyfin.nb.vgchl.com {
+	tls {
+		dns cloudflare {env.CF_API_KEY}
+	}
+
+	handle /* {
+		reverse_proxy jellyfin.vgchl.internal:8096
+	}
+}

@@ -1,0 +1,16 @@
+[Container]
+Image=docker.io/netbirdio/netbird:latest
+Volume=/home/worker/netbird:/etc/netbird:rw,z
+AddCapability=NET_ADMIN
+AddCapability=NET_RAW
+AddCapability=SYS_ADMIN
+AddCapability=SYS_RESOURCE
+Secret=nb-setup-key,type=env,target=NB_SETUP_KEY
+HostName=jellyfin
+AutoUpdate=registry
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target
