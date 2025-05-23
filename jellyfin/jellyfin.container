@@ -1,10 +1,12 @@
 [Container]
 Image=docker.io/jellyfin/jellyfin:latest
-Volume=/var/mnt/data/jellyfin/config:/config:rw,z
+Volume=/var/mnt/config/jellyfin:/config:rw,z
 Volume=/var/mnt/data/jellyfin/cache:/cache:rw,z
 Volume=/var/mnt/data/jellyfin/media:/media:rw,z
 PublishPort=8096:8096/tcp
-UserNS=keep-id
+User=1234:1234
+UIDMap=+1234:@%U
+GIDMap=+1234:@%G
 Network=jellyfin.network
 NetworkAlias=jellyfin
 AutoUpdate=registry

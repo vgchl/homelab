@@ -13,6 +13,18 @@ ignition:
       - local: 'dist/common/secrets-loader.ign'
 
 storage:
+  disks:
+    - device: /dev/sdc
+      partitions:
+        - number: 1
+          label: config
+
+  filesystems:
+    - device: /dev/disk/by-partlabel/config
+      path: /var/mnt/config
+      format: ext4
+      with_mount_unit: true
+
   directories:
     - path: /var/mnt/data/jellyfin
       user: 
@@ -24,17 +36,12 @@ storage:
         name: worker
       group:
         name: worker
-    - path: /var/mnt/data/jellyfin/config
-      user: 
-        name: worker
-      group:
-        name: worker
     - path: /var/mnt/data/jellyfin/media
       user: 
         name: worker
       group:
         name: worker
-    - path: /var/mnt/data/qbittorrent/config
+    - path: /home/worker/caddy
       user: 
         name: worker
       group:
@@ -44,39 +51,53 @@ storage:
         name: worker
       group:
         name: worker
-    - path: /var/mnt/data/sonarr/config
+    - path: /var/mnt/config/jellyfin
       user: 
         name: worker
       group:
         name: worker
-    - path: /var/mnt/data/prowlarr/config
+    - path: /var/mnt/config/qbittorrent
       user: 
         name: worker
       group:
         name: worker
-    - path: /var/mnt/data/radarr/config
+    - path: /var/mnt/config/sonarr
+      user: 
+        name: worker
+      group:
+        name: worker
+    - path: /var/mnt/config/prowlarr
+      user: 
+        name: worker
+      group:
+        name: worker
+    - path: /var/mnt/config/radarr
       user:
         name: worker
       group:
         name: worker
-    - path: /var/mnt/data/netbird      
+    - path: /var/mnt/config/bazarr
       user:
         name: worker
       group:
         name: worker
-  files:
-    - path: /home/worker/.config/containers/systemd/user/jellyfin.network
-      contents:
-        inline: |
-          [Network]
+    - path: /var/mnt/config/caddy
+      user:
+        name: worker
+      group:
+        name: worker
 
-          [Install]
-          WantedBy=multi-user.target
+  files:
     - path: /home/worker/.config/containers/containers.conf 
       contents:
-        inline: |
-          [network]
-          default_rootless_network_cmd="slirp4netns"
+        local: containers.conf
+      user:
+        name: worker
+      group:
+        name: worker
+    - path: /home/worker/.config/containers/systemd/user/jellyfin.network
+      contents:
+        local: jellyfin.network
       user:
         name: worker
       group:
@@ -116,9 +137,23 @@ storage:
         name: worker
       group:
         name: worker
-    - path: /home/worker/.config/containers/systemd/user/netbird.container
+    - path: /home/worker/.config/containers/systemd/user/bazarr.container
       contents:
-        local: netbird.container
+        local: bazarr.container
+      user:
+        name: worker
+      group:
+        name: worker
+    - path: /home/worker/.config/containers/systemd/user/caddy.container
+      contents:
+        local: caddy.container
+      user:
+        name: worker
+      group:
+        name: worker
+    - path: /home/worker/caddy/Caddyfile
+      contents:
+        local: Caddyfile
       user:
         name: worker
       group:

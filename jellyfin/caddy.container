@@ -1,0 +1,14 @@
+[Container]
+Image=docker.io/caddy:2
+Volume=/var/mnt/config/caddy:/data:rw,Z
+Volume=/home/worker/caddy:/etc/caddy:ro,Z
+Network=jellyfin.network
+PublishPort=80:80/tcp
+PublishPort=443:443/tcp
+AutoUpdate=registry
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target
